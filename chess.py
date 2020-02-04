@@ -12,10 +12,12 @@ def getFirstFrame(videofile):
         return image
 
 size = (9, 6) # size of checkerboard
-#vidpath = '/home/wahab/Downloads/checkerboard_check_vid_example.mp4'
-#image = getFirstFrame(vidpath)
-image = cv2.imread('Photos/1.jpg')
-#image = image[800:980, 500:800]
+vidpath = '../../Data/lisbon_data/PA02LAC11.mp4'
+image = getFirstFrame(vidpath)
+image = image[800:1080, 900:1420]
+#image = cv2.imread('Photos/1.jpg')
+print(image.shape)
+
 image = cv2.resize(image, (0,0), fx=1/2, fy=1/2) 
 gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 ret, thresh = cv2.threshold(gray, 100, 170, cv2.THRESH_BINARY)
