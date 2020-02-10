@@ -157,6 +157,11 @@ cv2.drawContours(contour, [screenCnt], -1, (0, 255, 0), 2)
 plt.subplot(), plt.imshow(contour, cmap = 'gray')
 plt.title('First Contour'), plt.xticks([]), plt.yticks([]), plt.show()
 
+
+
+
+
+
 #Define new paralellogram contour
 top_left = 			screenCnt[0][0]
 bottom_left = 		screenCnt[1][0]
@@ -201,6 +206,15 @@ plt.title('Final Contour'), plt.xticks([]), plt.yticks([]), plt.show()
 
 #Crop and warp image into a rectangle
 warped_cropped, tfm = four_point_transform(final_floor, new_screenCnt.reshape(4, 2)) # HOW IS GORUND CROPPED AND EXTRACT TFM FROM HERE
+
+
+
+
+
+
+
+
+
 
 #just make into func to make src points so can extract tfm
 
