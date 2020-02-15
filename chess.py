@@ -55,7 +55,6 @@ square = image.copy()
 cv2.polylines(square, np.int32([pts]), 1, (0,0,255), 4)
 cv2.imshow('square', square)
 cv2.waitKey()
-cv2.destroyAllWindows()
 
 
 warped_cropped, tfm = four_point_transform(image, 
