@@ -1,17 +1,17 @@
-from 	lisbonpose.transform import four_point_transform
-from 	os.path 				import isfile, join
-from 	PIL 					import Image, ImageDraw
-import 	matplotlib.pyplot 		as plt
-from 	subprocess 				import Popen
-from 	pathlib 				import Path
-from 	os 						import listdir
-import 	numpy 					as np
-import 	argparse
-import 	imutils
-import 	json
-import 	math
-import 	cv2
-import 	os
+from lisbonpose.transform import four_point_transform
+from os.path import isfile, join
+from PIL import Image, ImageDraw
+import matplotlib.pyplot as plt
+from subprocess import Popen
+from pathlib import Path
+from os import listdir
+import numpy as np
+import argparse
+import imutils
+import json
+import math
+import cv2
+import os
 
 # Functions ////////////////////////////////////
 
