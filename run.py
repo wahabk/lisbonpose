@@ -3,10 +3,10 @@ import cv2
 
 lisbon = Lisbon()
 
-vidpath = '../../Data/lisbon_data/PA02LAC11.mp4'
+vidpath = 'input/PA02LAC11.mp4'
 image = lisbon.getFrame(vidpath)
 #image = image[800:1080, 900:1420]
-image = cv2.resize(image, (0,0), fx=0.8, fy=0.8) 
+image = cv2.resize(image, (0,0), fx=0.5, fy=0.5) 
 
 corners = lisbon.detect_chess(image)
 square = lisbon.draw_chess(image, corners)
