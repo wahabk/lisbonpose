@@ -8,7 +8,20 @@ class Lisbon():
 	def __init__(self):
 		pass
 
-	def read_sort_keypoints(self, keypoint_file):
+	def read_pose_points(self, keypoint_filename):
+		keypoint_file = keypoint_filename.open()
+		keypoint_data = json.load(keypoint_file)
+		keypoint_file.close()
+
+		keypoints = keypoint_data['people']
+		if (len(keypoints) >= 1):
+			keypoints = keypoints[0] # first person
+			keypoints = keypoints['pose_keypoints_2d'] # body points in body25 model
+			return keypoints
+		else:
+			return []
+
+	def read_sort_keypoints(self, keypoint_files):
 		# Open and sort jsons into L/R foot position per frame
 		feet_array = []
 
@@ -47,19 +60,6 @@ class Lisbon():
 
 		return [left_array, right_array]
 
-	def read_pose_points(self, keypoint_filename):
-		keypoint_file = keypoint_filename.open()
-		keypoint_data = json.load(keypoint_file)
-		keypoint_file.close()
-
-		keypoints = keypoint_data['people']
-		if (len(keypoints) >= 1):
-			keypoints = keypoints[0] # first person
-			keypoints = keypoints['pose_keypoints_2d'] # body points in body25 model
-			return keypoints
-		else:
-			return []
-
 	def getFrame(self, videofile, frame=1):
 		vidcap = cv2.VideoCapture(videofile)
 		vidcap.set(1, frame-1)
@@ -92,7 +92,7 @@ class Lisbon():
 
 	def get_tfm(self, image, corners):
 		src, dst = self.get_src_dst(image, corners)
-		dst = dst + 5000
+		dst = dst + 5500
 		tfm = cv2.getPerspectiveTransform(src, dst)
 		return tfm
 
