@@ -11,10 +11,14 @@ conditions = ['LAC', 'LAP', 'LSC', 'LSP']
 
 for p in peoplepaths:
     for c in conditions:
-        vidpath = p / c
-        vids = [e for e  in vidpath.iterdir()]
+        walkpaths = p / c
+        walks = [e for e  in walkpaths.iterdir()]
+        for w in walks:
+            vids = [e for e  in w.iterdir()]
+            print(f'walk: {w} has vids {vids}')
 
-        print(vids)
+
+
 
 '''
 if not os.path.exists(directory): # Create target Directory if it doesn't already exist
