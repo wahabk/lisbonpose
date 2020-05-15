@@ -21,7 +21,7 @@ warped = cv2.resize(warped, (0,0), fx=0.1, fy=0.1)
 
 cv2.imshow('drawn chess', warped)
 cv2.waitKey()
-
+# extract feet
 #apply tfm to points
 #draw points on image
 #show both transformed together

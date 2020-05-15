@@ -4,9 +4,12 @@ from pathlib2 import Path
 from subprocess import Popen
 
 def run_OP(vidpath, pointspath):
-    pointspath.mkdir(exist_ok=True)
+    if pointspath.exists():
+        print(pointspath, '--- ALREADY EXISTS\n\n')
+        return
+    pointspath.mkdir(exist_ok=False)
     model_folder = '--model_folder ~/deep_learning/openpose/models/'
-    print('running:', '~/deep_learning/openpose/build/examples/openpose/openpose.bin '+model_folder+' --video '+str(vidpath)+' --write_json '+str(pointspath)+' --number_people_max 1')
+    print('\nrunning:', '~/deep_learning/openpose/build/examples/openpose/openpose.bin '+model_folder+' --video '+str(vidpath)+' --write_json '+str(pointspath)+' --number_people_max 1\n')
     p = Popen('~/deep_learning/openpose/build/examples/openpose/openpose.bin '+model_folder+' --video '+str(vidpath)+' --write_json '+str(pointspath)+' --number_people_max 1', 
             shell=True)
     p.wait()
