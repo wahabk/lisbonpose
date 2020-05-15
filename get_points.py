@@ -2,7 +2,7 @@ from lisbonpose.lisbonpose import Lisbon
 import cv2
 from pathlib2 import Path
 
-datapath = Path('Data/clean/PA/')
+datapath = Path('Data/clean/Y/')
 
 peoplepaths = [(e) for e in datapath.iterdir()]
 print(peoplepaths)
@@ -12,7 +12,9 @@ conditions = ['LAC', 'LAP', 'LSC', 'LSP']
 for p in peoplepaths:
     for c in conditions:
         vidpath = p / c
-        print(vidpath)
+        vids = [e for e  in vidpath.iterdir()]
+
+        print(vids)
 
 '''
 if not os.path.exists(directory): # Create target Directory if it doesn't already exist
