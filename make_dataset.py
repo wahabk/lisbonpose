@@ -12,7 +12,7 @@ for i in vidnames:
     #print(i.suffix)
     #print(i.stem)
     info = i.stem.split('_')
-    info.pop()
+    info.pop() 
     seperator = '/'
     new_path = 'Data/clean/' + seperator.join(info)
     Path(new_path).mkdir(parents=True, exist_ok=True)

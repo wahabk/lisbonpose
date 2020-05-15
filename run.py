@@ -3,7 +3,7 @@ import cv2
 
 lisbon = Lisbon()
 
-vidpath = 'input/PA02LAC11.mp4'
+vidpath = 'Data/Videos/PA_02_LAC_13.mp4'
 image = lisbon.getFrame(vidpath)
 #image = image[800:1080, 900:1420]
 image = cv2.resize(image, (0,0), fx=0.5, fy=0.5) 
@@ -21,3 +21,9 @@ warped = cv2.resize(warped, (0,0), fx=0.1, fy=0.1)
 
 cv2.imshow('drawn chess', warped)
 cv2.waitKey()
+
+#apply tfm to points
+#draw points on image
+#show both transformed together
+#find a way to do to all
+
