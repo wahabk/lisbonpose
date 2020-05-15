@@ -1,9 +1,11 @@
 from lisbonpose.lisbonpose import Lisbon
 import cv2
 from pathlib2 import Path
+from subprocess import Popen
+
 
 def run_OP(vidpath, pointspath):
-    pointpath.mkdir(exist_ok=True)
+    pointspath.mkdir(exist_ok=True)
     model_folder = '--model_folder ~/deep_learning/openpose/models/'
     p = Popen('~/deep_learning/openpose/build/examples/openpose/openpose.bin '+model_folder+' --video '+str(vidpath)+' --write_json '+str(pointspath)+' --number_people_max 1', 
             shell=True)
