@@ -15,7 +15,7 @@ for p in peoplepaths:
         walks = [e for e  in walkpaths.iterdir()]
         for w in walks:
             vids = [e for e  in w.iterdir()]
-            print('walk: '+w+' has vids '+vids+'')
+            print('walk: '+str(w)+' has vids '+str(vids)+'')
 
 
 
