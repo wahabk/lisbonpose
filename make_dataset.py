@@ -20,5 +20,6 @@ for i in vidnames:
     if not new_vidpath.exists():
         with new_vidpath.open(mode='xb') as fid:
             fid.write(i.read_bytes())
+            
     #i.replace(new_vidpath)
 

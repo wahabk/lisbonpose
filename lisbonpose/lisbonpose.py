@@ -3,6 +3,7 @@ import numpy as np
 import json
 import cv2
 import os
+import matplotlib.pyplot as plt
 
 class Lisbon():
 	def __init__(self):
@@ -26,7 +27,7 @@ class Lisbon():
 		feet_array = []
 
 		for keypoint_file in sorted(keypoint_files):
-			points = read_pose_points(keypoint_file)
+			points = self.read_pose_points(keypoint_file)
 			
 			if (len(points) >= 66): #If a person is detected in this frame
 				x = points[19 * 3] #Left big toe
@@ -58,7 +59,7 @@ class Lisbon():
 		xr = right_array[:,0]
 		yr = right_array[:,1]
 
-		return [left_array, right_array]
+		return np.array([left_array, right_array])
 
 	def getFrame(self, videofile, frame=1):
 		vidcap = cv2.VideoCapture(videofile)
@@ -92,7 +93,7 @@ class Lisbon():
 
 	def get_tfm(self, image, corners):
 		src, dst = self.get_src_dst(image, corners)
-		dst = dst + 5500
+		dst = dst + 6000
 		tfm = cv2.getPerspectiveTransform(src, dst)
 		return tfm
 
@@ -140,11 +141,30 @@ class Lisbon():
 
 
 	def transform_points(self, points, tfm):
-		pass
+		right_array 	= points[0]
+		left_array 		= points[1]
+		
+		#Apply tfm to points
+		right_array 	= np.array([right_array], dtype = ('float32'))
+		left_array 		= np.array([left_array], dtype = ('float32'))
+
+		tf_left_array 	= cv2.perspectiveTransform(left_array, tfm)
+		tf_right_array 	= cv2.perspectiveTransform(right_array, tfm)
+		transformed_points = [tf_left_array, tf_right_array]
+
 		return transformed_points
 
-	def save_points(self, points):
-		pass
-
 	def draw_points(self, image, points):
-		pass
+		left_array = points[0]
+		xl = left_array[:,0]
+		yl = left_array[:,1]
+
+		right_array = points[1]
+		xr = right_array[:,0]
+		yr = right_array[:,1]
+
+		fig, ax = plt.subplots()
+		ax.imshow(image )#, extent=[0, 1920, 0, 1080])
+		ax.plot(xl, yl, 'b')
+		ax.plot(xr, yr, 'r')
+		plt.show()

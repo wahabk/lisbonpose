@@ -68,13 +68,8 @@ xr = right_array[:,0]
 yr = right_array[:,1]
 
 img = plt.imread("/home/wahab/Data/points_on_floor.png")
-
 fig, ax = plt.subplots()
-
 ax.imshow(img, extent=[0, 1920, 0, 1080])
-
 ax.plot(xl, yl, 'b')
 ax.plot(xr, yr, 'r')
-
-
 plt.show()

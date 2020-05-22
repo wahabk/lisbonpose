@@ -16,7 +16,7 @@ def run_OP(vidpath, pointspath):
     p.communicate()
 
 datapath = Path('Data/clean/Y/')
-peoplepaths = [(e) for e in datapath.iterdir()]
+peoplepaths = [e for e in datapath.iterdir()]
 peoplepaths.sort()
 conditions = ['LAC', 'LAP', 'LSC', 'LSP']
 
