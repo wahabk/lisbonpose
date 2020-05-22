@@ -2,7 +2,7 @@ from lisbonpose.lisbonpose import Lisbon
 import cv2
 import numpy as np
 from pathlib2 import Path
-import json 
+import json
 
 iterdir = lambda x : [e for e  in x.iterdir()]
 
@@ -21,6 +21,7 @@ for p in peoplepaths:
         for w in walks:
             files = iterdir(w)
             vid = [str(f) for f in files if f.suffix == '.mp4']
+            print(vid[0])
             image = lisbon.getFrame(vid[0])
             pointpath = w / 'Points/'
             jsons = [e for e in pointpath.iterdir()]
@@ -35,14 +36,14 @@ for p in peoplepaths:
             cv2.imshow('drawn chess', square)
             cv2.waitKey()
 
-            tfm = lisbon.get_tfm(image, corners)
+            # tfm = lisbon.get_tfm(image, corners)
 
-            warped = cv2.warpPerspective(image, tfm, (1920, 1080)) #This bit crops around rectangle
-            warped = cv2.resize(warped, (0,0), fx=0.5, fy=0.5) 
+            # warped = cv2.warpPerspective(image, tfm, (1920, 1080)) #This bit crops around rectangle
+            # warped = cv2.resize(warped, (0,0), fx=0.5, fy=0.5) 
 
-            transformed_points = lisbon.transform_points(trajectories, tfm)
+            # transformed_points = lisbon.transform_points(trajectories, tfm)
 
-            lisbon.draw_points(warped, transformed_points)
+            # lisbon.draw_points(warped, transformed_points)
 
             jsonpath = w / 'foot_trajectories.json'
             with open(jsonpath, 'w') as json_file:
