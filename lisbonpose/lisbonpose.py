@@ -141,6 +141,8 @@ class Lisbon():
 
 
 	def transform_points(self, points, tfm):
+		points = points #+6000
+		
 		right_array 	= points[0]
 		left_array 		= points[1]
 		
@@ -150,7 +152,7 @@ class Lisbon():
 
 		tf_left_array 	= cv2.perspectiveTransform(left_array, tfm)
 		tf_right_array 	= cv2.perspectiveTransform(right_array, tfm)
-		transformed_points = [tf_left_array, tf_right_array]
+		transformed_points = np.array([tf_left_array[0], tf_right_array[0]])
 
 		return transformed_points
 
@@ -165,6 +167,6 @@ class Lisbon():
 
 		fig, ax = plt.subplots()
 		ax.imshow(image )#, extent=[0, 1920, 0, 1080])
-		ax.plot(xl, yl, 'b')
-		ax.plot(xr, yr, 'r')
+		ax.plot(xl, yl, '-b.')
+		ax.plot(xr, yr, '-r.')
 		plt.show()
