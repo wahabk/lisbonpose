@@ -26,6 +26,8 @@ for p in peoplepaths:
             pointpath = w / 'Points/'
             jsons = [e for e in pointpath.iterdir()]
             trajectories = lisbon.read_sort_keypoints(jsons)
+
+            
             lisbon.draw_points(image, trajectories)
 
             image = cv2.resize(image, (0,0), fx=0.8, fy=0.8) 
