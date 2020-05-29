@@ -46,7 +46,7 @@ for p in peoplepaths:
             # lisbon.draw_points(warped, transformed_points)
 
             jsonpath = w / 'foot_trajectories.json'
-            with open(jsonpath, 'w') as json_file:
+            with open(str(jsonpath), 'w') as json_file:
                 json.dump(trajectories.tolist(), json_file)
 
 
