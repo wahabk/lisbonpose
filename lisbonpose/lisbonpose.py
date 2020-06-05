@@ -5,6 +5,7 @@ import cv2
 import os
 import matplotlib.pyplot as plt
 
+
 class Lisbon():
 	def __init__(self):
 		pass
