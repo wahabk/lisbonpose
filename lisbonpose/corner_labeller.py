@@ -10,7 +10,7 @@ class Window(QWidget):
 
 	def __init__(self, stack):
 		super().__init__()
-		self.ogstack = stack
+		self.npstack = stack.copy()
 		self.label = QLabel(self)
 		self.initUI()
 
@@ -36,85 +36,89 @@ class Window(QWidget):
 		# cv2.putText(image, str(self.slice), (10,50), cv2.FONT_HERSHEY_SIMPLEX, 
 		# 	2, (255,255,255), 2, cv2.LINE_AA)
 		
-		if self.grayscale == True:
-			height, width = image.shape
-			bytesPerLine = width
-			return QImage(image.data, width, height, bytesPerLine, QImage.Format_Indexed8)
-		else:
-			height, width, channel = image.shape
-			bytesPerLine = 3 * width
-			return QImage(image.data, width, height, bytesPerLine, QImage.Format_RGB888)
+		height, width, channel = image.shape
+		bytesPerLine = 3 * width
+		return QImage(image.data, width, height, bytesPerLine, QImage.Format_RGB888)
 
 class order_labeller(Window):
 	def __init__(self, stack):
 		super().__init__(stack) #inherit methods from vie.window
-		self.ogstack = stack
 		self.corners = []
-		self.corners_labels = ['Tl', 'TR', 'BR', 'BL']
+		self.corners_labels = ['TL', 'TR', 'BR', 'BL']
 		self.order = 0
+		self.success = False
 		self.initUI()
 
 	def initUI(self):
 		#initialise UI
-		self.setWindowTitle('[LisbonPose] please click on the corners in order')
+		self.setWindowTitle('[LisbonPose] please click on the corners in order TL, TR, BR, BL')
 		self.update()
 		self.label.mousePressEvent = self.getPixel
 		self.resize(self.pixmap.width(), self.pixmap.height())
 
-	def getPixel(self , event):
-		#get pixels of every click and assign circle order
-		x = event.pos().x()
-		y = event.pos().y()
-		self.corners.append([x,y])
-		self.draw_corner(x, y)
-
-	def draw_corner(self, x, y):
-		font = cv2.FONT_HERSHEY_SIMPLEX
-		cv2.putText(slice_, str(self.corners_labels[self.order]), (x,y), font, 4, (255,255,255), 2, cv2.LINE_AA)
-		self.order += 1
-		self.update()
-		if self.order == 4: self.check()
-
-	def check(self):
 		self.b1 = QPushButton("Happy?", self)
 		self.b1.toggle()
 		self.b1.clicked.connect(self.Happy)
 		self.b1.move(30, 50)
 
-		self.b1 = QPushButton("Retry", self)
-		self.b1.toggle()
-		self.b1.clicked.connect(self.unHappy)
-		self.b1.move(80, 50)
+		self.b2 = QPushButton("Retry", self)
+		self.b2.toggle()
+		self.b2.clicked.connect(self.unHappy)
+		self.b2.move(130, 50)
+
+	def getPixel(self , event):
+		#get pixels of every click and assign circle order
+		x = event.pos().x()
+		y = event.pos().y()
+		if self.order < 4:
+			self.corners.append([x,y])
+			self.draw_corner(x, y)
+
+	def draw_corner(self, x, y):
+
+		font = cv2.FONT_HERSHEY_SIMPLEX
+		cv2.putText(self.npstack, str(self.corners_labels[self.order]), (x,y), font, 2, (255,255,255), 2, cv2.LINE_AA)
+		cv2.rectangle(self.npstack, (x - 5, y - 5), (x + 5, y + 5), (255, 0, 0), -1)
+		self.order += 1
+		self.update()
 
 	def Happy(self):
-		self.success = True
-		self.close()
+		if self.order == 4:
+			self.success = True
+			self.close()
 
 	def unHappy(self):
-		self.success = False
 		self.close()
 
 	def get_corners(self):
-		return self.success, np.array(self.corners), self.npstack
+		return self.success, np.array(self.corners, dtype = "float32"), self.npstack
 
 
 def corner_labeller(img):
-	success = False
-	while success == False:
-		app = QApplication(sys.argv)
-		ex = order_labeller(labelled_img)
-		ex.show()
-		app.exec_()
-		success, corners, image = ex.get_corners()
-	return corners, image
+
+	app = QApplication(sys.argv)
+	ex = order_labeller(img)
+	ex.show()
+	app.exec_()
+	success, corners, image = ex.get_corners()
+	return success, corners, image
 
 
 if __name__ == "__main__":
 	lisbon = Lisbon()
-	vidpath = 'Data/Videos/PA_02_LAC_13.mp4'
+	vidpath = 'Data/clean/01/LAC/L2/Y_01_LAC_L2_C.mp4'
 	image = lisbon.getFrame(vidpath)
 
-	cv2.imshow('image', image)
-	cv2.waitKey(27)
+	success = False
+	while success == False:
+		success, corners, labelled_image = corner_labeller(image)
+
+	print(corners)
+	tfm = lisbon.get_tfm_2(corners)
+	print(tfm)
+	warped = cv2.warpPerspective(labelled_image, tfm, (500,500)) #This bit crops around rectangle
+	
+	cv2.imshow('image', warped)
+	cv2.waitKey()
 
 

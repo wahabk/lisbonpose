@@ -1,6 +1,6 @@
 from pathlib2 import Path
 import numpy as np
-import json
+import json, codecs
 import cv2
 import os
 import matplotlib.pyplot as plt
@@ -98,6 +98,32 @@ class Lisbon():
 		tfm = cv2.getPerspectiveTransform(src, dst)
 		return tfm
 
+	def get_tfm_2(self, corners):
+		'''
+			Get homography transformation from corners of mat
+			Corners are considered as source points and destination 
+			points are the dimensions of the mat
+
+			corners is in order TL, TR, BR, BL 
+		'''
+		src = np.array([
+			corners[1],
+			corners[2],
+			corners[3],
+			corners[0]], dtype = "float32")
+
+		w = 500
+		h = 150
+
+		dst = np.array([
+			[0, 0],
+			[w, 0],
+			[w, h],
+			[0, h]], dtype = "float32")
+
+		tfm = cv2.getPerspectiveTransform(src, dst)
+		return tfm
+
 	def get_src_dst(self, image, pts):
 		# obtain a consistent order of the points and unpack them
 		# individually
@@ -171,3 +197,12 @@ class Lisbon():
 		ax.plot(xl, yl, '-b.')
 		ax.plot(xr, yr, '-r.')
 		plt.show()
+
+	def saveJSON(self, nparray, jsonpath):
+		json.dump(nparray.tolist(), codecs.open(jsonpath, 'w', encoding='utf-8'), separators=(',', ':'), sort_keys=True, indent=4) ### this saves the array in .json format
+
+	def readJSON(self, jsonpath):
+		obj_text = codecs.open(jsonpath, 'r', encoding='utf-8').read()
+		obj = json.loads(obj_text)
+		return np.array(obj)
+
