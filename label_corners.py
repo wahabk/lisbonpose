@@ -38,9 +38,9 @@ for p in peoplepaths:
             tfm = lisbon.get_tfm_2(corners)
             warped = cv2.warpPerspective(labelled_image, tfm, (500,150)) #This bit crops around rectangle
             
-            cv2.imshow('transformed cropped corner, if unhappy write down name', warped)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+            # cv2.imshow('transformed cropped corner, if unhappy write down name', warped)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
 
             jsonpath = w / 'tfm.json'
             lisbon.saveJSON(tfm, jsonpath)
