@@ -3,7 +3,12 @@ import cv2
 from pathlib2 import Path
 import os
 
-iterdir = lambda x : [e for e  in x.iterdir()]
+def iterdir(x):
+    list_ = []
+    for e in x.iterdir():
+        if e is not '.DS_Store':
+            list_.append(e)
+    return list_
 
 lisbon = lisbonpose.Lisbon()
 
