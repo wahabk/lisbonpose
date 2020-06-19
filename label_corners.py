@@ -6,7 +6,7 @@ import os
 def iterdir(x):
     list_ = []
     for e in x.iterdir():
-        if e != '.DS_Store':
+        if '.DS_Store' not in str(e):
             list_.append(e)
     return list_
 
