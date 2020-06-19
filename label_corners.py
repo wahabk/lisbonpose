@@ -6,7 +6,7 @@ import os
 def iterdir(x):
     list_ = []
     for e in x.iterdir():
-        if e is not '.DS_Store':
+        if e != '.DS_Store':
             list_.append(e)
     return list_
 
@@ -16,6 +16,7 @@ datapath = Path('Data/clean/')
 peoplepaths = [e for e in datapath.iterdir()]
 peoplepaths.sort()
 conditions = ['LAC', 'LAP', 'LSC', 'LSP']
+print(peoplepaths)
 
 for p in peoplepaths:
     for c in conditions:
