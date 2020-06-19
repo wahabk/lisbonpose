@@ -7,16 +7,16 @@ def iterdir(x):
     list_ = []
     for e in x.iterdir():
         if 'DS_Store' not in str(e):
+
             list_.append(e)
     return list_
 
 lisbon = lisbonpose.Lisbon()
 
 datapath = Path('Data/clean/')
-peoplepaths = [e for e in datapath.iterdir()]
+peoplepaths = iterdir(datapath)
 peoplepaths.sort()
 conditions = ['LAC', 'LAP', 'LSC', 'LSP']
-print(peoplepaths)
 
 for p in peoplepaths:
     for c in conditions:
