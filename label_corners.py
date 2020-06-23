@@ -7,7 +7,6 @@ def iterdir(x):
     list_ = []
     for e in x.iterdir():
         if 'DS_Store' not in str(e):
-
             list_.append(e)
     return list_
 
@@ -27,9 +26,12 @@ for p in peoplepaths:
             files = iterdir(w)
             vidpath = [f for f in files if f.suffix == '.mp4'][0]
             print('Video name: ', os.path.splitext(vidpath.stem)[0])
+
             vidpath = str(vidpath)
-            framenum = lisbonpose.video_viewer(vidpath)
-            frame = lisbon.getFrame(vidpath, framenum)
+            video = lisbon.getVideo(vidpath)
+            framenum = lisbonpose.video_viewer(video)
+            frame = video[framenum]
+            print(framenum)
 
             success = False
             while success == False:

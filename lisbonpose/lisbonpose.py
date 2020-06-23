@@ -4,11 +4,39 @@ import json, codecs
 import cv2
 import os
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 
 class Lisbon():
 	def __init__(self):
 		pass
+
+	def getFrame(self, videofile, frame=1):
+		cap = cv2.VideoCapture(videofile)
+		cap.set(1, frame-1)
+		success, img = cap.read()
+		if not success: 
+			raise Exception("Could not load image! :(")
+		cap.release()
+		return img
+
+	def getVideo(self, video_path):
+		cap = cv2.VideoCapture(video_path)
+		cap.set(cv2.CAP_PROP_POS_AVI_RATIO,1)
+		length = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+		video_length = int(length)-12
+
+		video = []
+		for i in tqdm(range(video_length)):
+			cap.set(1, i)
+			success, frame = cap.read()
+			frame = cv2.resize(frame, (960, 540))  
+			video.append(frame)
+			if not success:
+				raise Exception(f"Could not load video, failed on frame {i}, video length is {video_length} frames.")
+		
+		cap.release()
+		return np.array(video)
 
 	def read_pose_points(self, keypoint_filename):
 		keypoint_file = keypoint_filename.open()
@@ -61,14 +89,6 @@ class Lisbon():
 		yr = right_array[:,1]
 
 		return np.array([left_array, right_array])
-
-	def getFrame(self, videofile, frame=1):
-		vidcap = cv2.VideoCapture(videofile)
-		vidcap.set(1, frame-1)
-		success, img = vidcap.read()
-		if not success: 
-			raise Exception("Could not load image! :(")
-		return img
 
 	def detect_chess(self, image):
 		gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)

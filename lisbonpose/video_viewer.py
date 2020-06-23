@@ -9,9 +9,9 @@ from lisbonpose import Lisbon
 
 class MainWindow(QMainWindow):
 
-	def __init__(self, vidpath):
+	def __init__(self, video):
 		super().__init__()
-		self.vidpath = vidpath
+		self.video = video
 		self.initUI()
 
 	def initUI(self):
@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
 		self.setWindowTitle('Lisbonpose video viewer')
 		self.statusBar().showMessage('Status bar: Ready')
 		
-		self.viewer = Viewer(self.vidpath)
+		self.viewer = Viewer(self.video)
 		self.setCentralWidget(self.viewer)
 		#widget.findChildren(QWidget)[0]
 
@@ -34,16 +34,12 @@ class MainWindow(QMainWindow):
 
 class Viewer(QWidget):
 
-	def __init__(self, vidpath):
+	def __init__(self, video):
 		super().__init__()
 		self.framenum = 0
-		self.vidpath = vidpath
+		self.video = video
 		self.label = QLabel(self)
-
-		vidcap = cv2.VideoCapture(vidpath)
-		vidcap.set(cv2.CAP_PROP_POS_AVI_RATIO,1)
-		length = vidcap.get(cv2.CAP_PROP_FRAME_COUNT)-20
-		self.vidlength = int(length)
+		self.vidlength = video.shape[0]-1
 
 		lisbon = Lisbon()
 
@@ -67,8 +63,7 @@ class Viewer(QWidget):
 	def update(self):
 		#Update displayed image
 		lisbon = Lisbon()
-		self.npimage = lisbon.getFrame(self.vidpath, self.framenum)
-		self.npimage = cv2.resize(self.npimage, (960, 540))     
+		self.npimage = self.video[self.framenum]
 		self.image = self.np2qt(self.npimage)
 		self.pixmap = QPixmap(QPixmap.fromImage(self.image))
 		self.label.setPixmap(self.pixmap)
@@ -76,7 +71,7 @@ class Viewer(QWidget):
 	def wheelEvent(self, event):
 		#scroll through slices and go to beginning if reached max
 		self.framenum = self.framenum + int(event.angleDelta().y()/120)*5
-		if self.framenum > self.vidlength: 	self.framenum = 0
+		if self.framenum > self.vidlength: 		self.framenum = 0
 		if self.framenum < 0: 					self.framenum = self.vidlength
 		self.slider.setValue(self.framenum)
 		self.update()
@@ -101,9 +96,9 @@ class Viewer(QWidget):
 
 
 
-def video_viewer(vidpath):
+def video_viewer(video):
 	app = QApplication(sys.argv)
-	win = MainWindow(vidpath)
+	win = MainWindow(video)
 	win.show()
 	app.exec_()
 	return win.viewer.getframenum()
@@ -112,8 +107,8 @@ def video_viewer(vidpath):
 if __name__ == "__main__":
 	lisbon = Lisbon()
 	vidpath = 'Data/clean/01/LAC/L2/Y_01_LAC_L2_C.mp4'
-	
-	framenum = video_viewer(vidpath)
+	video = lisbon.getVideo(vidpath)
+	framenum = video_viewer(video)
 	print(framenum)
 
 
