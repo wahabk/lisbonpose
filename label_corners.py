@@ -23,30 +23,36 @@ for p in peoplepaths:
         walks = iterdir(walkpaths)
         walks.sort()
         for w in walks:
+            #load everything
             files = iterdir(w)
             vidpath = [f for f in files if f.suffix == '.mp4'][0]
             print('Video name: ', os.path.splitext(vidpath.stem)[0])
-
+            trajectorypath = w / 'foot_trajectories.json'
             vidpath = str(vidpath)
             video = lisbon.getVideo(vidpath)
             framenum = lisbonpose.video_viewer(video)
+            framenum = 0
             frame = video[framenum]
-            print(framenum)
 
+            # Label corners until success
             success = False
             while success == False:
                 success, corners, labelled_image = lisbonpose.corner_labeller(frame)
 
             tfm = lisbon.get_tfm_2(corners)
-            warped = cv2.warpPerspective(labelled_image, tfm, (500,150)) #This bit crops around rectangle
-            
-            # cv2.imshow('transformed cropped corner, if unhappy write down name', warped)
+            tfmpath = w / 'tfm.json'
+            lisbon.saveJSON(tfm, tfmpath)
+            tfm = lisbon.readJSON(tfmpath)
+            warped = cv2.warpPerspective(frame, tfm, (500,150)) #This bit crops around rectangle
+
+            # cv2.imshow('transformed cropped corner', warped)
             # cv2.waitKey(0)
             # cv2.destroyAllWindows()
 
-            jsonpath = w / 'tfm.json'
-            lisbon.saveJSON(tfm, jsonpath)
+            trajectories = lisbon.readJSON(trajectorypath)
+            transformed_points = lisbon.transform_points(trajectories, tfm)
 
-
+            # lisbon.draw_points(frame, trajectories)
+            lisbon.draw_points(warped, transformed_points)
 
 

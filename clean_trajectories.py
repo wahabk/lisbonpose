@@ -8,7 +8,7 @@ iterdir = lambda x : [e for e  in x.iterdir()]
 
 lisbon = Lisbon()
 
-datapath = Path('Data/clean/Y/')
+datapath = Path('Data/clean/')
 peoplepaths = [e for e in datapath.iterdir()]
 peoplepaths.sort()
 conditions = ['LAC', 'LAP', 'LSC', 'LSP']
@@ -28,24 +28,24 @@ for p in peoplepaths:
             trajectories = lisbon.read_sort_keypoints(jsons)
 
             
-            lisbon.draw_points(image, trajectories)
+            # lisbon.draw_points(image, trajectories)
 
-            image = cv2.resize(image, (0,0), fx=0.8, fy=0.8) 
+            # image = cv2.resize(image, (0,0), fx=0.8, fy=0.8) 
 
-            corners = lisbon.detect_chess(image)
-            square = lisbon.draw_chess(image, corners)
+            # corners = lisbon.detect_chess(image)
 
-            cv2.imshow('drawn chess', square)
-            cv2.waitKey()
+            # # square = lisbon.draw_chess(image, corners)
+            # # # cv2.imshow('drawn chess', square)
+            # # # cv2.waitKey()
 
-            # tfm = lisbon.get_tfm(image, corners)
+            # # tfm = lisbon.get_tfm(image, corners)
 
-            # warped = cv2.warpPerspective(image, tfm, (1920, 1080)) #This bit crops around rectangle
-            # warped = cv2.resize(warped, (0,0), fx=0.5, fy=0.5) 
+            # # warped = cv2.warpPerspective(image, tfm, (1920, 1080)) #This bit crops around rectangle
+            # # warped = cv2.resize(warped, (0,0), fx=0.5, fy=0.5) 
 
-            # transformed_points = lisbon.transform_points(trajectories, tfm)
+            # # transformed_points = lisbon.transform_points(trajectories, tfm)
 
-            # lisbon.draw_points(warped, transformed_points)
+            # # lisbon.draw_points(warped, transformed_points)
 
             jsonpath = w / 'foot_trajectories.json'
             with open(str(jsonpath), 'w') as json_file:

@@ -26,10 +26,11 @@ class Lisbon():
 		video_length = int(length)-12
 
 		video = []
+		print('Reading video...')
 		for i in range(video_length):
 			cap.set(1, i)
 			success, frame = cap.read()
-			frame = cv2.resize(frame, (960, 540))  
+			#frame = cv2.resize(frame, (960, 540))  
 			video.append(frame)
 			if not success:
 				raise Exception(f"Could not load video, failed on frame {i}, video length is {video_length} frames.")
