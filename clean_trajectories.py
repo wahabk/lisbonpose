@@ -14,7 +14,7 @@ def iterdir(x):
 lisbon = Lisbon()
 
 datapath = Path('Data/clean/')
-peoplepaths = [e for e in datapath.iterdir()]
+peoplepaths = iterdir(datapath)
 peoplepaths.sort()
 conditions = ['LAC', 'LAP', 'LSC', 'LSP']
 
