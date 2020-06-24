@@ -4,7 +4,12 @@ import numpy as np
 from pathlib2 import Path
 import json
 
-iterdir = lambda x : [e for e  in x.iterdir()]
+def iterdir(x):
+    list_ = []
+    for e in x.iterdir():
+        if 'DS_Store' not in str(e):
+            list_.append(e)
+    return list_
 
 lisbon = Lisbon()
 
