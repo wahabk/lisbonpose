@@ -4,7 +4,6 @@ import json, codecs
 import cv2
 import os
 import matplotlib.pyplot as plt
-from tqdm import tqdm
 
 
 class Lisbon():
@@ -27,7 +26,7 @@ class Lisbon():
 		video_length = int(length)-12
 
 		video = []
-		for i in tqdm(range(video_length)):
+		for i in range(video_length):
 			cap.set(1, i)
 			success, frame = cap.read()
 			frame = cv2.resize(frame, (960, 540))  
