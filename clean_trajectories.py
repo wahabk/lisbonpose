@@ -1,5 +1,4 @@
 from lisbonpose.lisbonpose import Lisbon
-import cv2
 import numpy as np
 from pathlib2 import Path
 import json

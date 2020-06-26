@@ -4,11 +4,54 @@ import json, codecs
 import cv2
 import os
 import matplotlib.pyplot as plt
-
+import time
 
 class Lisbon():
-	def __init__(self):
-		pass
+	def __init__(self, path = './Data/'):
+		self.dataset_path = path
+
+	def read(self, n):
+		datapath = Path(self.dataset_path + 'clean/')
+		all_paths = self.iterdir(datapath)
+		all_paths.sort()
+		conditions = ['LAC', 'LAP', 'LSC', 'LSP']
+		p = all_paths[n] # Path for folder in participant
+
+		person_dict = {}
+		condition_list = []
+
+		for c in conditions:
+			condition_path = p / c
+			runs = self.iterdir(condition_path)
+			runs.sort()
+			for run in runs:
+				files = self.iterdir(run)
+				vid = [str(f) for f in files if f.suffix == '.mp4']
+				
+				vid_path = vid[0]
+				points_path = run / 'Points/'
+				tfm_path = run / 'tfm.json'
+				trajectory_path = run / 'foot_trajectories.json'
+				
+				frame = self.getFrame(vid[0])
+				try:
+					tfm = self.readJSON(tfm_path)
+				except:
+					print('Not reading this TFM as its not available', str(run))
+					tfm = None
+				trajectories = self.readJSON(trajectory_path)
+
+				run_dict = {
+					'name' : os.path.splitext(run.stem)[0],
+					'condition' : c,
+					'frame': frame, 
+					'trajectories': trajectories,
+					'tfm': tfm
+				}
+
+				condition_list.append(run_dict)
+			person_dict[c] = condition_list
+		return person_dict
 
 	def getFrame(self, videofile, frame=1):
 		cap = cv2.VideoCapture(videofile)
@@ -83,10 +126,11 @@ class Lisbon():
 
 		left_array = feet_array[:,0] #Take left foot position per frame and seperate into x and y
 		right_array = feet_array[:,1] #Take right foot position per frame and seperate into x and y
-		xl = left_array[:,0]
-		yl = left_array[:,1]
-		xr = right_array[:,0]
-		yr = right_array[:,1]
+		
+		# xl = left_array[:,0]
+		# yl = left_array[:,1]
+		# xr = right_array[:,0]
+		# yr = right_array[:,1]
 
 		return np.array([left_array, right_array])
 
@@ -226,3 +270,15 @@ class Lisbon():
 		obj = json.loads(obj_text)
 		return np.array(obj)
 
+	def imshow(self, img):
+		timestr = time.strftime("%Y%m%d-%H%M%S")
+		cv2.imshow('Press <S> to save, or any other key to quit.', img)
+		c = cv2.waitKey(0)
+		if 's' == chr(c & 255):
+			cv2.imwrite('.output/'+timestr+'.png', img)
+			print(save_name, 'successfuly saved.')
+		
+
+	def iterdir(self, x):
+		# This is a custom of iterdir that gets rid of weird mac ds_store files
+		return [e for e in x.iterdir() if 'DS_Store' not in str(e)]
