@@ -12,7 +12,8 @@ def iterdir(x):
 
 lisbon = lisbonpose.Lisbon()
 
-datapath = Path('Data/clean/')
+settings = lisbon.readJSON('.settings.json').tolist()
+datapath = Path(settings["dataset_path"])
 peoplepaths = iterdir(datapath)
 peoplepaths.sort()
 conditions = ['LAC', 'LAP', 'LSC', 'LSP']

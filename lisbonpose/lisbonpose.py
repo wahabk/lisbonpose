@@ -282,3 +282,4 @@ class Lisbon():
 	def iterdir(self, x):
 		# This is a custom of iterdir that gets rid of weird mac ds_store files
 		return [e for e in x.iterdir() if 'DS_Store' not in str(e)]
+
