@@ -1,6 +1,6 @@
-from qtpy.QtWidgets import QMessageBox, QApplication, QWidget, QPushButton, QToolTip, QLabel
-from qtpy.QtGui import QFont, QPixmap, QImage
-from qtpy.QtCore import Qt, QTimer
+from PyQt5.QtWidgets import QMessageBox, QApplication, QWidget, QPushButton, QToolTip, QLabel
+from PyQt5.QtGui import QFont, QPixmap, QImage
+from PyQt5.QtCore import Qt, QTimer
 import numpy as np
 import cv2
 import sys
@@ -91,8 +91,7 @@ class order_labeller(Window):
 		self.close()
 
 	def get_corners(self):
-		return self.success, np.array(self.corners, dtype = "float32"), self.npstack
-
+		return self.success, np.array(self.corners, dtype = "float32")
 
 def corner_labeller(img):
 
@@ -100,8 +99,8 @@ def corner_labeller(img):
 	ex = order_labeller(img)
 	ex.show()
 	app.exec_()
-	success, corners, image = ex.get_corners()
-	return success, corners, image
+	success, corners = ex.get_corners()
+	return success, corners
 
 
 if __name__ == "__main__":
@@ -111,12 +110,12 @@ if __name__ == "__main__":
 
 	success = False
 	while success == False:
-		success, corners, labelled_image = corner_labeller(image)
+		success, corners = corner_labeller(image)
 
 	print(corners)
 	tfm = lisbon.get_tfm_2(corners)
 	print(tfm)
-	warped = cv2.warpPerspective(labelled_image, tfm, (500,500)) #This bit crops around rectangle
+	warped = cv2.warpPerspective(image, tfm, (500,150)) #This bit crops around rectangle
 	
 	cv2.imshow('image', warped)
 	cv2.waitKey()

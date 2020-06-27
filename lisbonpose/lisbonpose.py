@@ -7,15 +7,15 @@ import matplotlib.pyplot as plt
 import time
 
 class Lisbon():
-	def __init__(self, path = './Data/'):
+	def __init__(self, path = './Data/clean/'):
 		self.dataset_path = path
 
 	def read(self, n):
-		datapath = Path(self.dataset_path + 'clean/')
+		datapath = Path(self.dataset_path)
 		all_paths = self.iterdir(datapath)
 		all_paths.sort()
 		conditions = ['LAC', 'LAP', 'LSC', 'LSP']
-		p = all_paths[n] # Path for folder in participant
+		p = all_paths[n-1] # Path for folder in participant
 
 		person_dict = {}
 		condition_list = []
@@ -42,11 +42,13 @@ class Lisbon():
 				trajectories = self.readJSON(trajectory_path)
 
 				run_dict = {
-					'name' : os.path.splitext(run.stem)[0],
+					'name' : str(run),
 					'condition' : c,
 					'frame': frame, 
 					'trajectories': trajectories,
-					'tfm': tfm
+					'tfm': tfm,
+					'vidpath' : vid_path,
+					'tfmpath' : tfm_path
 				}
 
 				condition_list.append(run_dict)
@@ -62,15 +64,16 @@ class Lisbon():
 		cap.release()
 		return img
 
-	def getVideo(self, video_path):
+	def getVideo(self, video_path, skip = 1):
 		cap = cv2.VideoCapture(video_path)
 		cap.set(cv2.CAP_PROP_POS_AVI_RATIO,1)
 		length = cap.get(cv2.CAP_PROP_FRAME_COUNT)
 		video_length = int(length)-12
 
 		video = []
-		print('Reading video...')
-		for i in range(video_length):
+		
+		for i in range(0, video_length, skip):
+			print('Reading video frame ', i, end="\r")
 			cap.set(1, i)
 			success, frame = cap.read()
 			#frame = cv2.resize(frame, (960, 540))  
@@ -261,6 +264,7 @@ class Lisbon():
 		ax.plot(xl, yl, '-b.')
 		ax.plot(xr, yr, '-r.')
 		plt.show()
+		plt.close(fig)
 
 	def saveJSON(self, nparray, jsonpath):
 		json.dump(nparray.tolist(), codecs.open(jsonpath, 'w', encoding='utf-8'), separators=(',', ':'), sort_keys=True, indent=4) ### this saves the array in .json format

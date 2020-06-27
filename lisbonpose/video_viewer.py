@@ -70,7 +70,7 @@ class Viewer(QWidget):
 
 	def wheelEvent(self, event):
 		#scroll through slices and go to beginning if reached max
-		self.framenum = self.framenum + int(event.angleDelta().y()/120)*5
+		self.framenum = self.framenum + int(event.angleDelta().y()/120)
 		if self.framenum > self.vidlength: 		self.framenum = 0
 		if self.framenum < 0: 					self.framenum = self.vidlength
 		self.slider.setValue(self.framenum)
