@@ -11,6 +11,7 @@ class MainWindow(QMainWindow):
 
 	def __init__(self, video):
 		super().__init__()
+
 		self.video = video
 		self.initUI()
 
@@ -91,17 +92,16 @@ class Viewer(QWidget):
 		self.framenum = self.slider.value()
 		self.update()
 
-	def getframenum(self):
-		return self.framenum
 
 
 
 def video_viewer(video):
+
 	app = QApplication(sys.argv)
 	win = MainWindow(video)
 	win.show()
 	app.exec_()
-	return win.viewer.getframenum()
+	return win.viewer.framenum
 
 
 if __name__ == "__main__":

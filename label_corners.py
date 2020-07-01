@@ -12,9 +12,7 @@ for i in range(1,3):
 	for condition, condition_data in person.items():
 		for run in condition_data:
 			print(run['name'])
-			tfm = run["tfm"]
 			trajectories = run['trajectories']
-			frame = run['frame']
 			vidpath = run['vidpath']
 			tfmpath = run['tfmpath']
 
@@ -23,13 +21,8 @@ for i in range(1,3):
 			video = lisbon.getVideo(vidpath, skip = skip)
 			low_res_video = np.array([cv2.resize(frame, (960, 540)) for frame in video])
 
-			print('\nviewing')
 			framenum = lisbonpose.video_viewer(low_res_video)
-			# import pdb
-			# pdb.set_trace()
 			frame = video[framenum]
-			video, low_res_video = None, None
-			gc.collect()
 
 			# Label corners until success
 			success = False
@@ -38,14 +31,9 @@ for i in range(1,3):
 
 			tfm = lisbon.get_tfm_2(corners)
 			lisbon.saveJSON(tfm, tfmpath)
-			warped = cv2.warpPerspective(frame, tfm, (500,150)) #This bit crops around rectangle
 
-			transformed_points = lisbon.transform_points(trajectories, tfm)
-
-			# lisbon.draw_points(frame, trajectories)
-			lisbon.draw_points(warped, transformed_points)
-
-			success, corners, labelled_image = None, None, None
-			gc.collect()
+			# warped = cv2.warpPerspective(frame, tfm, (500,150)) #This bit crops around rectangle
+			# transformed_points = lisbon.transform_points(trajectories, tfm)
+			# lisbon.draw_points(warped, transformed_points)
 
 
