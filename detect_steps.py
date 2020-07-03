@@ -1,78 +1,68 @@
 from lisbonpose.lisbonpose import Lisbon
-import cv2
 import numpy as np
-from pathlib2 import Path
-import json
 import matplotlib.pyplot as plt
-
-iterdir = lambda x : [e for e  in x.iterdir()]
 
 lisbon = Lisbon()
 
-datapath = Path('Data/clean/Y/')
-peoplepaths = [e for e in datapath.iterdir()]
-peoplepaths.sort()
-conditions = ['LAC', 'LAP', 'LSC', 'LSP']
+for i in range(1,2):
+	person = lisbon.read(i)
+	for condition, condition_data in person.items():
+		for run in condition_data:
+			run['name']
 
-for p in peoplepaths:
-    for c in conditions:
-        walkpaths = p / c
-        walks = iterdir(walkpaths)
-        walks.sort()
-        for w in walks:
-            files = iterdir(w)
-            vid = [str(f) for f in files if f.suffix == '.mp4'][0]
-            image = lisbon.getFrame(vid)
+			tfm = run['tfm']
+			traj = run['trajectories']
+			frame = run['frame']
 
-            jsonpath = w / 'foot_trajectories.json'
-            with open(jsonpath) as json_file:
-                trajectories = json.load(json_file)
-            trajectories = np.array(trajectories)
+			if tfm is not None:
+				transf_traj = run['transf_traj']
+				warped = run['transf_img']
 
-            corners = lisbon.detect_chess(image)
-            square = lisbon.draw_chess(image, corners)
-            tfm = lisbon.get_tfm(image, corners)
-            transformed_points = lisbon.transform_points(trajectories, tfm)
-            warped = cv2.warpPerspective(image, tfm, (8000, 7000)) #This bit crops around rectangle
-            #warped = cv2.resize(warped, (0,0), fx=0.5, fy=0.5) 
+				#lisbon.draw_points(warped, transf_traj)
+				
+				left = transf_traj[0]
+				right = transf_traj[1]
+				zipped = zip(left, right)
 
-            lisbon.draw_points(image, trajectories)
-            lisbon.draw_points(warped, transformed_points)
+				x_distance, y_distance = [], []
+				for (xl, yl), (xr, yr) in zipped:
+					x_distance.append(xl - xr)
+					y_distance.append(yl - yr)
+				
+				x_distance = np.array(x_distance)
+				y_distance = np.array(y_distance)
 
-            # left_array = trajectories[0]
-            # xl = left_array[:,0]
-            # yl = left_array[:,1]
 
-            # right_array = trajectories[1]
-            # xr = right_array[:,0]
-            # yr = right_array[:,1]
 
-            # #Show and save trajectory over image
-            # fig, ax = plt.subplots() #Plot left and right foot trajectory in blue and red
-            # ax.plot(xl, yl, '-b.')
-            # ax.plot(xr, yr, '-r.')
-            # plt.xlim(right=1920) #xmax is your value
-            # plt.xlim(left=0) #xmin is your value
-            # plt.ylim(top=0) #ymax is your value
-            # plt.ylim(bottom=1080) #ymin is your value
-            # plt.show()
 
-            # print(trajectories, '\n\n\n', transformed_points)
-            # left_array = transformed_points[0]
-            # xl = left_array[:,0]
-            # yl = left_array[:,1]
+				step_frame = [] # list of frames where a step is detected
 
-            # right_array = transformed_points[1]
-            # xr = right_array[:,0]
-            # yr = right_array[:,1]
+				for i in range(0, x_distance.shape[0]-1):
+					step = False
+					x1 = x_distance[i]
+					x2 = x_distance[i+1]
+					if (x1 < 0 and x2 > 0) or (x1 > 0 and x2 < 0):
+						step_frame.append(i)
+						step = True
 
-            # #Show and save trajectory over image
-            # fig, ax = plt.subplots() #Plot left and right foot trajectory in blue and red
-            # ax.plot(xl, yl, '-b.')
-            # ax.plot(xr, yr, '-r.')
-            # # plt.xlim(right=7000) #xmax is your value
-            # # plt.xlim(left=6000) #xmin is your value
-            # # plt.ylim(top=6000) #ymax is your value
-            # # plt.ylim(bottom=7000) #ymin is your value
-            # plt.show()
+				x_axis = np.zeros(250)
+				steplist = [(0,x) for x in step_frame]
+				print(x_distance)
+				plt.plot(x_distance, 'r')
+				plt.plot(y_distance, 'b')
+				plt.plot(x_axis)
+				plt.plot(step_frame, np.zeros(len(step_frame)), 'go')
+
+				#plt.axis([0, 250, -100, 100])
+				plt.xlabel('frame')
+				plt.ylabel('distance (pixels)')
+				plt.title('Histogram of IQ')
+				plt.show()
+
+				
+
+
+
+
+
 

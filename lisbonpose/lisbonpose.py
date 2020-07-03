@@ -37,7 +37,7 @@ class Lisbon():
 				try:
 					tfm = self.readJSON(tfm_path)
 				except:
-					print('Not reading this TFM as its not available', str(run))
+					print('Not reading this TFM as its not available: ', str(run))
 					tfm = None
 				trajectories = self.readJSON(trajectory_path)
 
@@ -50,6 +50,14 @@ class Lisbon():
 					'vidpath' : vid_path,
 					'tfmpath' : tfm_path
 				}
+
+				# Optional
+				if tfm is not None:
+					transformed_trajectories = self.transform_points(trajectories, tfm)
+					warped = cv2.warpPerspective(frame, tfm, (500,150)) #This bit crops around rectangle
+					run_dict['transf_traj'] = transformed_trajectories
+					run_dict['transf_img'] = warped
+					
 
 				condition_list.append(run_dict)
 			person_dict[c] = condition_list
@@ -236,6 +244,7 @@ class Lisbon():
 
 	def transform_points(self, points, tfm):
 		points = points #+6000
+		tfm = np.array(tfm, dtype = "float32")
 		
 		right_array 	= points[0]
 		left_array 		= points[1]
