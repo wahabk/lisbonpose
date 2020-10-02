@@ -11,6 +11,7 @@ class Lisbon():
 		self.dataset_path = path
 
 	def read(self, n):
+		print('Reading participant', n)
 		datapath = Path(self.dataset_path)
 		all_paths = self.iterdir(datapath)
 		all_paths.sort()
@@ -55,12 +56,14 @@ class Lisbon():
 				if tfm is not None:
 					transformed_trajectories = self.transform_points(trajectories, tfm)
 					warped = cv2.warpPerspective(frame, tfm, (500,150)) #This bit crops around rectangle
+					transformed_trajectories[transformed_trajectories <= 20] = None
 					run_dict['transf_traj'] = transformed_trajectories
 					run_dict['transf_img'] = warped
 					
 
 				condition_list.append(run_dict)
 			person_dict[c] = condition_list
+
 		return person_dict
 
 	def getFrame(self, videofile, frame=1):

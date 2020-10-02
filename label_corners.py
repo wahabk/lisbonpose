@@ -1,9 +1,7 @@
 import lisbonpose
 import cv2
 from pathlib2 import Path
-import os
 import numpy as np
-import gc
 
 lisbon = lisbonpose.Lisbon()
 
@@ -15,7 +13,6 @@ for i in range(1,3):
 			trajectories = run['trajectories']
 			vidpath = run['vidpath']
 			tfmpath = run['tfmpath']
-
 			# skip is number of frames skipped to save on RAM
 			skip = 10
 			video = lisbon.getVideo(vidpath, skip = skip)
@@ -35,5 +32,7 @@ for i in range(1,3):
 			# warped = cv2.warpPerspective(frame, tfm, (500,150)) #This bit crops around rectangle
 			# transformed_points = lisbon.transform_points(trajectories, tfm)
 			# lisbon.draw_points(warped, transformed_points)
+			
+
 
 
