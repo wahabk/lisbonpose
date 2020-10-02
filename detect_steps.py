@@ -1,15 +1,27 @@
 from lisbonpose.lisbonpose import Lisbon
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import savgol_filter
 
 lisbon = Lisbon()
 
-def zero_not_hero(yolo):
-	yolo2 = []
-	for x in yolo:
-		if x == 0: x = None
-		yolo2.append(x)
-	return yolo2
+def masks(vec):
+	# From https://stackoverflow.com/questions/47342447/find-locations-on-a-curve-where-the-slope-changes?rq=1
+	d = np.diff(vec)
+	dd = np.diff(d)
+
+	# Mask of locations where graph goes to vertical or horizontal, depending on vec
+	to_mask = ((d[:-1] != 0) & (d[:-1] == -dd))
+	# Mask of locations where graph comes from vertical or horizontal, depending on vec
+	from_mask = ((d[1:] != 0) & (d[1:] == dd))
+	return to_mask, from_mask
+
+def slope(p1, p2):
+	print(p1[1] ,p2)
+	[x1, y1] = p1
+	[x2, y2] = p2
+	m = (y2-y1)/(x2-x1)
+	return m
 
 for i in range(1,2):
 	person = lisbon.read(i)
@@ -25,10 +37,19 @@ for i in range(1,2):
 				warped = run['transf_img']
 				lisbon.draw_points(warped, transf_traj)
 
-				left = transf_traj[0]
-				right = transf_traj[1]
-				print(left.shape)
 				
+
+				new_transf_traj = []
+				for foot in transf_traj:
+					print(foot[:, 0].shape)
+					x = savgol_filter(foot[:, 0], 23, 2)
+					y = savgol_filter(foot[:, 1], 23, 2)
+					foot = np.column_stack((x, y))
+					new_transf_traj.append(foot)
+
+				left = new_transf_traj[0]
+				right = new_transf_traj[1]
+
 				x_distance, y_distance = [], []
 				zipped = zip(left, right)
 				for (xl, yl), (xr, yr) in zipped:
@@ -45,9 +66,31 @@ for i in range(1,2):
 					if (x1 < 0 and x2 > 0) or (x1 > 0 and x2 < 0):
 						step_frame.append(j)
 						step = True
-				
-				total_step_n = len(step_frame)
 
+
+				# y = x_distance
+				# x = np.arange(x_distance.shape[0])
+				# curve = np.column_stack((x, y))
+				
+				# steps = []
+				# slopes = []
+				# for i, x in enumerate(curve):
+				# 	p1 = curve[i]
+				# 	p2 = curve[i+1]
+				# 	for k in [p1, p2]:
+				# 		for j in k:
+				# 			if np.isnan(j) == False:
+				# 				slope = slope(p1, p2)
+				# 				slopes.append(slope)
+				# 				if i == curve.shape[0]: break
+				
+				# for i, x in enumerate(slopes):
+				# 	x1 = slopes[i]
+				# 	x2 = slopes[i+1]
+				# 	if (x1 < 0 and x2 > 0) or (x1 > 0 and x2 < 0):
+				# 		steps.append(i)
+
+				total_step_n = len(step_frame)
 				x_axis = np.zeros(250)
 				steplist = [(0,x) for x in step_frame]
 				plt.plot(x_distance, 'r')

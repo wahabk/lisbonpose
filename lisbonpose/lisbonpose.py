@@ -21,6 +21,7 @@ class Lisbon():
 		person_dict = {}
 		condition_list = []
 
+
 		for c in conditions:
 			condition_path = p / c
 			runs = self.iterdir(condition_path)
