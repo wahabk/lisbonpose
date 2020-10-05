@@ -41,8 +41,8 @@ for i in range(1,2):
 
 				new_transf_traj = []
 				for foot in transf_traj:
-					x = savgol_filter(foot[:, 0], 16, 3)
-					y = savgol_filter(foot[:, 1], 16, 3)
+					x = savgol_filter(foot[:, 0], 17, 3)
+					y = savgol_filter(foot[:, 1], 17, 3)
 					foot = np.column_stack((x, y))
 					new_transf_traj.append(foot)
 
@@ -75,12 +75,11 @@ for i in range(1,2):
 				no_left_steps = len(left_steps)
 				print(left_steps)
 
-				total_step_n = len(step_frame)
 				x_axis = np.zeros(250)
 				steplist = [(0,x) for x in step_frame]
 				plt.plot(x_distance, 'r')
 				plt.plot(x_axis)
-				plt.plot(left_steps[0], np.zeros(len(left_steps[0])), 'go')
+				plt.plot(left_steps, np.zeros(no_left_steps), 'go')
 				#plt.axis([0, 250, -100, 100])
 				plt.xlabel('frame')
 				plt.ylabel('distance (pixels)')
