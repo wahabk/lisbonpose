@@ -1,7 +1,7 @@
 from lisbonpose.lisbonpose import Lisbon
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import savgol_filter
+from scipy.signal import savgol_filter, find_peaks
 
 lisbon = Lisbon()
 
@@ -41,9 +41,8 @@ for i in range(1,2):
 
 				new_transf_traj = []
 				for foot in transf_traj:
-					print(foot[:, 0].shape)
-					x = savgol_filter(foot[:, 0], 23, 2)
-					y = savgol_filter(foot[:, 1], 23, 2)
+					x = savgol_filter(foot[:, 0], 16, 3)
+					y = savgol_filter(foot[:, 1], 16, 3)
 					foot = np.column_stack((x, y))
 					new_transf_traj.append(foot)
 
@@ -72,30 +71,16 @@ for i in range(1,2):
 				# x = np.arange(x_distance.shape[0])
 				# curve = np.column_stack((x, y))
 				
-				# steps = []
-				# slopes = []
-				# for i, x in enumerate(curve):
-				# 	p1 = curve[i]
-				# 	p2 = curve[i+1]
-				# 	for k in [p1, p2]:
-				# 		for j in k:
-				# 			if np.isnan(j) == False:
-				# 				slope = slope(p1, p2)
-				# 				slopes.append(slope)
-				# 				if i == curve.shape[0]: break
-				
-				# for i, x in enumerate(slopes):
-				# 	x1 = slopes[i]
-				# 	x2 = slopes[i+1]
-				# 	if (x1 < 0 and x2 > 0) or (x1 > 0 and x2 < 0):
-				# 		steps.append(i)
+				left_steps = find_peaks(x_distance, distance = 10)[0]
+				no_left_steps = len(left_steps)
+				print(left_steps)
 
 				total_step_n = len(step_frame)
 				x_axis = np.zeros(250)
 				steplist = [(0,x) for x in step_frame]
 				plt.plot(x_distance, 'r')
 				plt.plot(x_axis)
-				plt.plot(step_frame, np.zeros(total_step_n), 'go')
+				plt.plot(left_steps[0], np.zeros(len(left_steps[0])), 'go')
 				#plt.axis([0, 250, -100, 100])
 				plt.xlabel('frame')
 				plt.ylabel('distance (pixels)')
