@@ -250,20 +250,17 @@ class Lisbon():
 		points = points #+6000
 		tfm = np.array(tfm, dtype = "float32")
 		
-		right_array 	= points[0]
-		left_array 		= points[1]
-		
+		# format points for cv2
+		right_array 	= np.array([points[0]], dtype = ('float32'))
+		left_array 		= np.array([points[1]], dtype = ('float32'))
 		#Apply tfm to points
-		right_array 	= np.array([right_array], dtype = ('float32'))
-		left_array 		= np.array([left_array], dtype = ('float32'))
-
 		tf_left_array 	= cv2.perspectiveTransform(left_array, tfm)
 		tf_right_array 	= cv2.perspectiveTransform(right_array, tfm)
 		transformed_points = np.array([tf_left_array[0], tf_right_array[0]])
 
 		return transformed_points
 
-	def draw_points(self, image, points):
+	def draw_points(self, image, points, steps=None):
 		left_array = points[0]
 		xl = left_array[:,0]
 		yl = left_array[:,1]
@@ -276,6 +273,16 @@ class Lisbon():
 		ax.imshow(image )#, extent=[0, 1920, 0, 1080])
 		ax.plot(xl, yl, '-b.')
 		ax.plot(xr, yr, '-r.')
+		if steps is not None:
+			left_array = steps[0]
+			xl = left_array[:,0]
+			yl = left_array[:,1]
+
+			right_array = steps[1]
+			xr = right_array[:,0]
+			yr = right_array[:,1]
+			ax.scatter(xl, yl, s=500, c='c', marker='X')
+			ax.scatter(xr, yr, s=500, c='m', marker='X')
 		plt.show()
 		plt.close(fig)
 
