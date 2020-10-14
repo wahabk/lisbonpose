@@ -29,6 +29,7 @@ for p in peoplepaths:
             image = lisbon.getFrame(vid[0])
             pointpath = w / 'Points/'
             jsons = [e for e in pointpath.iterdir()]
+            print(jsons[0])
             trajectories = lisbon.read_sort_keypoints(jsons)
 
             
