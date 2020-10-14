@@ -5,53 +5,35 @@ from scipy.signal import savgol_filter, find_peaks
 
 lisbon = Lisbon()
 
-def masks(vec):
-	# From https://stackoverflow.com/questions/47342447/find-locations-on-a-curve-where-the-slope-changes?rq=1
-	d = np.diff(vec)
-	dd = np.diff(d)
 
-	# Mask of locations where graph goes to vertical or horizontal, depending on vec
-	to_mask = ((d[:-1] != 0) & (d[:-1] == -dd))
-	# Mask of locations where graph comes from vertical or horizontal, depending on vec
-	from_mask = ((d[1:] != 0) & (d[1:] == dd))
-	return to_mask, from_mask
-
-def slope(p1, p2):
-	print(p1[1] ,p2)
-	[x1, y1] = p1
-	[x2, y2] = p2
-	m = (y2-y1)/(x2-x1)
-	return m
-
-for i in range(1,2):
+for i in range(1,2): # for each person on local data
 	person = lisbon.read(i)
 	for condition, condition_data in person.items():
 		for run in condition_data:
 			run['name']
 			tfm = run['tfm']
-			traj = run['trajectories']
 			frame = run['frame']
 
 			if tfm is not None:
 				transf_traj = run['transf_traj']
 				warped = run['transf_img']
-				lisbon.draw_points(warped, transf_traj)
-
 				
 
+				
+				# make a smoothed transformed_trahectory
 				new_transf_traj = []
 				for foot in transf_traj:
-					x = savgol_filter(foot[:, 0], 16, 3)
-					y = savgol_filter(foot[:, 1], 16, 3)
+					x = savgol_filter(foot[:, 0], 17, 3)
+					y = savgol_filter(foot[:, 1], 17, 3)
 					foot = np.column_stack((x, y))
 					new_transf_traj.append(foot)
 
 				left = new_transf_traj[0]
 				right = new_transf_traj[1]
-
+				zipped_traj = zip(left, right)
 				x_distance, y_distance = [], []
-				zipped = zip(left, right)
-				for (xl, yl), (xr, yr) in zipped:
+				
+				for (xl, yl), (xr, yr) in zipped_traj:
 					x_distance.append(xl - xr)
 					y_distance.append(yl - yr)
 				
@@ -71,21 +53,38 @@ for i in range(1,2):
 				# x = np.arange(x_distance.shape[0])
 				# curve = np.column_stack((x, y))
 				
-				left_steps = find_peaks(x_distance, distance = 10)[0]
-				no_left_steps = len(left_steps)
-				print(left_steps)
+				'''
+				This section constructs a list 'steps = [left, right]' which contains
+				two lists of frames that each foot steps
+				'''
+				#TODO remove nans from xdistance
+				left, left_dict = find_peaks(x_distance, height=10, distance=25)
+				right, right_dict = find_peaks(-x_distance, height=10, distance=25)
+				no_steps = len(left) + len(right)
+				steps = [left, right]
 
-				total_step_n = len(step_frame)
 				x_axis = np.zeros(250)
-				steplist = [(0,x) for x in step_frame]
-				plt.plot(x_distance, 'r')
+				plt.plot(x_distance, 'g')
 				plt.plot(x_axis)
-				plt.plot(left_steps[0], np.zeros(len(left_steps[0])), 'go')
+				plt.plot(left, np.zeros(len(left)), 'bo')
+				plt.plot(right, np.zeros(len(right)), 'ro')
 				#plt.axis([0, 250, -100, 100])
 				plt.xlabel('frame')
 				plt.ylabel('distance (pixels)')
 				plt.title(f'Person: {i} Condition: {condition} X Distance between left and right foot')
 				plt.show()
 
-				
+				# constuct list of xy positions for steps of each foot
+				stepsXY = []
+				for i, foot in enumerate(steps):
+					footXY = []
+					for j, frame in enumerate(foot):
+						stepXY = transf_traj[i,frame]
+						footXY.append(stepXY)
+					footXY = np.array(footXY)
+					stepsXY.append(footXY)
+				stepsXY=np.array(stepsXY)
+
+				#construct a list of x-distance between each step
+				image = lisbon.draw_points(warped, transf_traj, steps = stepsXY)
 
