@@ -84,7 +84,7 @@ class Lisbon():
 
 		video = []
 		
-		for i in range(0, video_length, skip):
+		for i in range(0, video_length-10, skip):
 			print('Reading video frame ', i, end="\r")
 			cap.set(1, i)
 			success, frame = cap.read()
