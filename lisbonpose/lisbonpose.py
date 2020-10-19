@@ -41,13 +41,13 @@ class Lisbon():
 				except:
 					print('Not reading this TFM as its not available: ', str(run))
 					tfm = None
-				trajectories = self.readJSON(trajectory_path)
+				#trajectories = self.readJSON(trajectory_path)
 
 				run_dict = {
 					'name' : str(run),
 					'condition' : c,
 					'frame': frame, 
-					'trajectories': trajectories,
+					# 'trajectories': trajectories,
 					'tfm': tfm,
 					'vidpath' : vid_path,
 					'tfmpath' : tfm_path
@@ -97,9 +97,12 @@ class Lisbon():
 		return np.array(video)
 
 	def read_pose_points(self, keypoint_filename):
-		keypoint_file = keypoint_filename.open()
-		keypoint_data = json.load(keypoint_file)
-		keypoint_file.close()
+		
+		print(keypoint_filename)
+		with open(keypoint_filename) as f:
+			keypoint_data = json.load(f)
+		
+		
 
 		keypoints = keypoint_data['people']
 		if (len(keypoints) >= 1):

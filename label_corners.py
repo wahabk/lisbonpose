@@ -11,7 +11,7 @@ while True:
 	for condition, condition_data in person.items():
 		for run in condition_data:
 			print(run['name'])
-			trajectories = run['trajectories']
+			# trajectories = run['trajectories']
 			vidpath = run['vidpath']
 			tfmpath = run['tfmpath']
 			# skip is number of frames skipped to save on RAM
