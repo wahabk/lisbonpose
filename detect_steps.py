@@ -5,6 +5,65 @@ from scipy.signal import savgol_filter, find_peaks
 
 lisbon = Lisbon()
 
+def detect_steps(traj):
+	'''
+	Takes a transformed (flat) foot trajectories and finds steps using peaks and troughs 
+	of x_distance between feet
+	'''
+	new_transf_traj = []
+	# make a smoothed transformed_trahectory
+	for foot in traj:
+		# Use savgol filter to smooth foot trajectory for step detection
+		x = savgol_filter(foot[:, 0], 17, 3)
+		y = savgol_filter(foot[:, 1], 17, 3)
+		# reformat to fit previous format
+		foot = np.column_stack((x, y))
+		new_transf_traj.append(foot)
+
+	left = new_transf_traj[0]
+	right = new_transf_traj[1]
+	zipped_traj = zip(left, right)
+	x_distance, y_distance = [], []
+	
+	for (xl, yl), (xr, yr) in zipped_traj:
+		x_distance.append(xl - xr)
+		y_distance.append(yl - yr)
+	
+	x_distance = np.array(x_distance)
+
+	'''
+	This section constructs a list of two lists 'steps = [left, right]' 
+	each is a list of frames where the foot steps
+	'''
+
+	#TODO remove nans from xdistance
+	left, left_dict = find_peaks(x_distance, height=10, distance=25)
+	right, right_dict = find_peaks(-x_distance, height=10, distance=25)
+	no_steps = len(left) + len(right)
+	steps = [left, right]
+
+
+
+	# constuct list of xy positions for steps of each foot
+	stepsXY = []
+	for i, foot in enumerate(steps):
+		footXY = []
+		for j, frame in enumerate(foot):
+			stepXY = transf_traj[i,frame]
+			footXY.append(stepXY)
+		footXY = np.array(footXY)
+		stepsXY.append(footXY)
+	stepsXY=np.array(stepsXY)
+
+	return steps, stepsXY, x_distance
+
+def find_step_LW(stepsXY):
+	pass
+
+
+
+
+
 
 for i in range(1,2): # for each person on local data
 	person = lisbon.read(i)
@@ -18,51 +77,10 @@ for i in range(1,2): # for each person on local data
 				transf_traj = run['transf_traj']
 				warped = run['transf_img']
 				
-
+				steps, stepsXY, x_distance = detect_steps(transf_traj)
 				
-				# make a smoothed transformed_trahectory
-				new_transf_traj = []
-				for foot in transf_traj:
-					x = savgol_filter(foot[:, 0], 17, 3)
-					y = savgol_filter(foot[:, 1], 17, 3)
-					foot = np.column_stack((x, y))
-					new_transf_traj.append(foot)
-
-				left = new_transf_traj[0]
-				right = new_transf_traj[1]
-				zipped_traj = zip(left, right)
-				x_distance, y_distance = [], []
-				
-				for (xl, yl), (xr, yr) in zipped_traj:
-					x_distance.append(xl - xr)
-					y_distance.append(yl - yr)
-				
-				x_distance = np.array(x_distance)
-				step_frame = [] # list of frames where a step is detected
-
-				for j in range(0, x_distance.shape[0]-1):
-					step = False
-					x1 = x_distance[j]
-					x2 = x_distance[j+1]
-					if (x1 < 0 and x2 > 0) or (x1 > 0 and x2 < 0):
-						step_frame.append(j)
-						step = True
-
-
-				# y = x_distance
-				# x = np.arange(x_distance.shape[0])
-				# curve = np.column_stack((x, y))
-				
-				'''
-				This section constructs a list 'steps = [left, right]' which contains
-				two lists of frames that each foot steps
-				'''
-				#TODO remove nans from xdistance
-				left, left_dict = find_peaks(x_distance, height=10, distance=25)
-				right, right_dict = find_peaks(-x_distance, height=10, distance=25)
-				no_steps = len(left) + len(right)
-				steps = [left, right]
-
+				left = steps[0]
+				right = steps[1]
 				x_axis = np.zeros(250)
 				plt.plot(x_distance, 'g')
 				plt.plot(x_axis)
@@ -74,17 +92,10 @@ for i in range(1,2): # for each person on local data
 				plt.title(f'Person: {i} Condition: {condition} X Distance between left and right foot')
 				plt.show()
 
-				# constuct list of xy positions for steps of each foot
-				stepsXY = []
-				for i, foot in enumerate(steps):
-					footXY = []
-					for j, frame in enumerate(foot):
-						stepXY = transf_traj[i,frame]
-						footXY.append(stepXY)
-					footXY = np.array(footXY)
-					stepsXY.append(footXY)
-				stepsXY=np.array(stepsXY)
 
-				#construct a list of x-distance between each step
+
 				image = lisbon.draw_points(warped, transf_traj, steps = stepsXY)
+
+				# extract functions from this
+				# Find number of steps, step length, and step width
 

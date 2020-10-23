@@ -41,7 +41,7 @@ class Lisbon():
 				except:
 					print('Not reading this TFM as its not available: ', str(run))
 					tfm = None
-				#trajectories = self.readJSON(trajectory_path)
+				trajectories = self.readJSON(trajectory_path)
 
 				run_dict = {
 					'name' : str(run),
