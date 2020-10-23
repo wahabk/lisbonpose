@@ -54,12 +54,12 @@ class Lisbon():
 				}
 
 				# Optional
-				if tfm is not None:
-					transformed_trajectories = self.transform_points(trajectories, tfm)
-					warped = cv2.warpPerspective(frame, tfm, (500,150)) #This bit crops around rectangle
-					transformed_trajectories[transformed_trajectories <= 20] = None
-					run_dict['transf_traj'] = transformed_trajectories
-					run_dict['transf_img'] = warped
+				# if tfm is not None:
+				# 	transformed_trajectories = self.transform_points(trajectories, tfm)
+				# 	warped = cv2.warpPerspective(frame, tfm, (500,150)) #This bit crops around rectangle
+				# 	transformed_trajectories[transformed_trajectories <= 20] = None
+				# 	run_dict['transf_traj'] = transformed_trajectories
+				# 	run_dict['transf_img'] = warped
 					
 
 				condition_list.append(run_dict)
