@@ -34,15 +34,14 @@ def detect_steps(traj):
 	'''
 	This section constructs a list of two lists 'steps = [left, right]' 
 	each is a list of frames where the foot steps
+
+	TODO remove nans from xdistance
 	'''
 
-	#TODO remove nans from xdistance
 	left, left_dict = find_peaks(x_distance, height=10, distance=25)
 	right, right_dict = find_peaks(-x_distance, height=10, distance=25)
 	no_steps = len(left) + len(right)
 	steps = [left, right]
-
-
 
 	# constuct list of xy positions for steps of each foot
 	stepsXY = []
@@ -58,7 +57,18 @@ def detect_steps(traj):
 	return steps, stepsXY, x_distance
 
 def find_step_LW(stepsXY):
-	pass
+	stepXY_dist = []
+	for foot in stepsXY:
+		footXY_dist = []
+		for i, step in enumerate(foot[:-1]):
+			# if i == len(foot): continue
+			x1, y1 = foot[i]
+			x2, y2 = foot[i+1]
+
+			footXY_dist.append((x1 - x2, y1 - y2))
+		stepXY_dist.append(footXY_dist)
+	return np.array(stepXY_dist)
+
 
 
 
@@ -74,10 +84,13 @@ for i in range(1,2): # for each person on local data
 			frame = run['frame']
 
 			if tfm is not None:
+				print(run.keys())
 				transf_traj = run['transf_traj']
 				warped = run['transf_img']
 				
 				steps, stepsXY, x_distance = detect_steps(transf_traj)
+
+				stepXY_dist = find_step_LW(stepsXY)
 				
 				left = steps[0]
 				right = steps[1]
@@ -92,7 +105,7 @@ for i in range(1,2): # for each person on local data
 				plt.title(f'Person: {i} Condition: {condition} X Distance between left and right foot')
 				plt.show()
 
-
+				print(f'\n {stepXY_dist}')
 
 				image = lisbon.draw_points(warped, transf_traj, steps = stepsXY)
 
