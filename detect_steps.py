@@ -7,8 +7,8 @@ lisbon = Lisbon()
 
 def detect_steps(traj):
 	'''
-	Takes a transformed (flat) foot trajectories and finds steps using peaks and troughs 
-	of x_distance between feet
+	Takes transformed (flat) foot trajectories and finds steps using peaks and troughs 
+	of distance between feet in x axis
 	'''
 	new_transf_traj = []
 	# make a smoothed transformed_trahectory
