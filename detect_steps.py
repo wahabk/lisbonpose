@@ -5,10 +5,20 @@ from scipy.signal import savgol_filter, find_peaks
 
 lisbon = Lisbon()
 
+def combine(list1, list2):
+	# if list1[0,0] < list2[0,0]: index1 = True
+	# else: left_first = False
+	first = list1
+	second = list2
+	result = [None]*(len(list1)+len(list2))
+	result[::2] = first
+	result[1::2] = second
+	return result
+
 def detect_steps(traj):
 	'''
 	Takes transformed (flat) foot trajectories and finds steps using peaks and troughs 
-	of distance between feet in x axis
+	of distance between feet in x axis (because foot x distance is largest when a step is taken)
 	'''
 	new_transf_traj = []
 	# make a smoothed transformed_trahectory
@@ -20,6 +30,7 @@ def detect_steps(traj):
 		foot = np.column_stack((x, y))
 		new_transf_traj.append(foot)
 
+	# reformat trajectory for finding x
 	left = new_transf_traj[0]
 	right = new_transf_traj[1]
 	zipped_traj = zip(left, right)
@@ -28,7 +39,6 @@ def detect_steps(traj):
 	for (xl, yl), (xr, yr) in zipped_traj:
 		x_distance.append(xl - xr)
 		y_distance.append(yl - yr)
-	
 	x_distance = np.array(x_distance)
 
 	'''
@@ -58,6 +68,13 @@ def detect_steps(traj):
 
 def find_step_LW(stepsXY):
 	stepXY_dist = []
+	left = stepsXY[0]
+	right = stepsXY[1]
+
+
+
+
+
 	for foot in stepsXY:
 		footXY_dist = []
 		for i, step in enumerate(foot[:-1]):
@@ -89,9 +106,8 @@ for i in range(1,2): # for each person on local data
 				warped = run['transf_img']
 				
 				steps, stepsXY, x_distance = detect_steps(transf_traj)
-
 				stepXY_dist = find_step_LW(stepsXY)
-				
+
 				left = steps[0]
 				right = steps[1]
 				x_axis = np.zeros(250)
@@ -108,6 +124,10 @@ for i in range(1,2): # for each person on local data
 				print(f'\n {stepXY_dist}')
 
 				image = lisbon.draw_points(warped, transf_traj, steps = stepsXY)
+
+				list1 = ['f', 'o', 'o']
+				list2 = ['hello', 'world']
+				print(combine(list1, list2))
 
 				# extract functions from this
 				# Find number of steps, step length, and step width

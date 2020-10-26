@@ -6,16 +6,15 @@ from subprocess import Popen
 def run_OP(vidpath, pointspath):
     if pointspath.exists():
         print(pointspath, '--- ALREADY EXISTS\n\n')
-        return
-    pointspath.mkdir(exist_ok=False)
-    model_folder = '--model_folder ~/deep_learning/openpose/models/'
-    print('\nrunning:', '~/deep_learning/openpose/build/examples/openpose/openpose.bin '+model_folder+' --video '+str(vidpath)+' --write_json '+str(pointspath)+' --number_people_max 1\n')
-    p = Popen('~/deep_learning/openpose/build/examples/openpose/openpose.bin '+model_folder+' --video '+str(vidpath)+' --write_json '+str(pointspath)+' --number_people_max 1', 
+    pointspath.mkdir(exist_ok=True)
+    model_folder = '--model_folder ~/code/openpose/models/'
+    print('\nrunning:', '~/code/openpose/build/examples/openpose/openpose.bin '+model_folder+' --video '+str(vidpath)+' --write_json '+str(pointspath)+' --number_people_max 1\n')
+    p = Popen('~/code/openpose/build/examples/openpose/openpose.bin '+model_folder+' --video '+str(vidpath)+' --write_json '+str(pointspath)+' --number_people_max 1 --display 0 --render_pose 0', 
             shell=True)
     p.wait()
     p.communicate()
 
-datapath = Path('Data/clean/Y/')
+datapath = Path('Data/clean/')
 peoplepaths = [e for e in datapath.iterdir()]
 peoplepaths.sort()
 conditions = ['LAC', 'LAP', 'LSC', 'LSP']

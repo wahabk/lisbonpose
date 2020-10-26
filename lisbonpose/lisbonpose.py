@@ -7,10 +7,20 @@ import matplotlib.pyplot as plt
 import time
 
 class Lisbon():
+	'''
+	Class for reader, writer, viewer etc
+
+	encapsulates helper/utility funvtions
+
+	'''
 	def __init__(self, path = './Data/clean/'):
 		self.dataset_path = path
 
 	def read(self, n):
+		'''
+		Read each person dictionary, which contains list of runs for each condition
+		'''
+		
 		print('Reading participant', n)
 		datapath = Path(self.dataset_path)
 		all_paths = self.iterdir(datapath)
