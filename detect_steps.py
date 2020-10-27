@@ -2,18 +2,10 @@ from lisbonpose.lisbonpose import Lisbon
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter, find_peaks
+from math import sqrt
+import csv
 
 lisbon = Lisbon()
-
-def combine(list1, list2):
-	# if list1[0,0] < list2[0,0]: index1 = True
-	# else: left_first = False
-	first = list1
-	second = list2
-	result = [None]*(len(list1)+len(list2))
-	result[::2] = first
-	result[1::2] = second
-	return result
 
 def detect_steps(traj):
 	'''
@@ -55,58 +47,49 @@ def detect_steps(traj):
 
 	# constuct list of xy positions for steps of each foot
 	stepsXY = []
+	footless = []
 	for i, foot in enumerate(steps):
 		footXY = []
-		for j, frame in enumerate(foot):
+		for frame in foot:
 			stepXY = transf_traj[i,frame]
 			footXY.append(stepXY)
+			footless.append(stepXY)
 		footXY = np.array(footXY)
 		stepsXY.append(footXY)
 	stepsXY=np.array(stepsXY)
+	footless=np.array(footless)
 
-	return steps, stepsXY, x_distance
+	return no_steps, steps, stepsXY, x_distance, footless
 
 def find_step_LW(stepsXY):
+	
 	stepXY_dist = []
-	left = stepsXY[0]
-	right = stepsXY[1]
+	for i, step in enumerate(stepsXY[:-1]):
+		# if i == len(step): continue
+		x1, y1 = stepsXY[i]
+		x2, y2 = stepsXY[i+1]
 
+		stepXY_dist.append((float(sqrt((x2 - x1)**2)), float(sqrt((y2 - y1)**2))))
+	return np.array(stepXY_dist, dtype='float32')
 
-
-
-
-	for foot in stepsXY:
-		footXY_dist = []
-		for i, step in enumerate(foot[:-1]):
-			# if i == len(foot): continue
-			x1, y1 = foot[i]
-			x2, y2 = foot[i+1]
-
-			footXY_dist.append((x1 - x2, y1 - y2))
-		stepXY_dist.append(footXY_dist)
-	return np.array(stepXY_dist)
-
-
-
-
-
-
-
-for i in range(1,2): # for each person on local data
+for i in range(1,26): # for each person on local data
 	person = lisbon.read(i)
+	data = []
+	heading = ['Participant', 'condition', 'Walk', '# Steps', 'Step Length MEAN', 'Step Length STD', 'Step Width MEAN', 'Step Width STD']
+	data.append(heading)
 	for condition, condition_data in person.items():
 		for run in condition_data:
-			run['name']
+			run_names = run['name'].split('/')
+			print(run_names)
 			tfm = run['tfm']
 			frame = run['frame']
 
 			if tfm is not None:
-				print(run.keys())
 				transf_traj = run['transf_traj']
 				warped = run['transf_img']
 				
-				steps, stepsXY, x_distance = detect_steps(transf_traj)
-				stepXY_dist = find_step_LW(stepsXY)
+				no_steps, steps, stepsXY, x_distance, footless = detect_steps(transf_traj)
+				stepXY_dist = find_step_LW(footless)
 
 				left = steps[0]
 				right = steps[1]
@@ -119,16 +102,20 @@ for i in range(1,2): # for each person on local data
 				plt.xlabel('frame')
 				plt.ylabel('distance (pixels)')
 				plt.title(f'Person: {i} Condition: {condition} X Distance between left and right foot')
-				plt.show()
+				# plt.show()
 
-				print(f'\n {stepXY_dist}')
-
-				image = lisbon.draw_points(warped, transf_traj, steps = stepsXY)
-
-				list1 = ['f', 'o', 'o']
-				list2 = ['hello', 'world']
-				print(combine(list1, list2))
+				# image = lisbon.draw_points(warped, transf_traj, steps = stepsXY)
+				print('stepXY ', stepXY_dist)
 
 				# extract functions from this
 				# Find number of steps, step length, and step width
+				step_lengths = [x for x, y in stepXY_dist]
+				step_widths = [y for x, y in stepXY_dist]
+				d = run_names[2:] + [no_steps, np.mean(step_lengths), np.std(step_lengths), np.mean(step_widths), np.std(step_widths)]
+				data.append(d)
+	
+	with open('final_data.csv', mode='w') as f:
+		employee_writer = csv.writer(f, delimiter=',')
+		for row in data:
+			employee_writer.writerow(row)
 
