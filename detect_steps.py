@@ -72,11 +72,13 @@ def find_step_LW(stepsXY):
 		stepXY_dist.append((float(sqrt((x2 - x1)**2)), float(sqrt((y2 - y1)**2))))
 	return np.array(stepXY_dist, dtype='float32')
 
+data = []
+heading = ['Participant', 'condition', 'Walk', '# Steps', 'Step Length MEAN', 'Step Length STD', 'Step Width MEAN', 'Step Width STD', 'pixel_correction']
+data.append(heading)
+
 for i in range(1,26): # for each person on local data
 	person = lisbon.read(i)
-	data = []
-	heading = ['Participant', 'condition', 'Walk', '# Steps', 'Step Length MEAN', 'Step Length STD', 'Step Width MEAN', 'Step Width STD']
-	data.append(heading)
+	
 	for condition, condition_data in person.items():
 		for run in condition_data:
 			run_names = run['name'].split('/')
@@ -111,11 +113,16 @@ for i in range(1,26): # for each person on local data
 				# Find number of steps, step length, and step width
 				step_lengths = [x for x, y in stepXY_dist]
 				step_widths = [y for x, y in stepXY_dist]
-				d = run_names[2:] + [no_steps, np.mean(step_lengths), np.std(step_lengths), np.mean(step_widths), np.std(step_widths)]
+				nums = [np.mean(step_lengths), np.std(step_lengths), np.mean(step_widths), np.std(step_widths)]
+				x,y,c = warped.shape
+				pixel_correction = y / 600
+				nums = [n*pixel_correction for n in nums]
+
+				d = run_names[2:] + [no_steps] + nums + [pixel_correction]
 				data.append(d)
 	
-	with open('final_data.csv', mode='w') as f:
-		employee_writer = csv.writer(f, delimiter=',')
-		for row in data:
-			employee_writer.writerow(row)
+with open('final_data.csv', mode='w') as f:
+	employee_writer = csv.writer(f, delimiter=',')
+	for row in data:
+		employee_writer.writerow(row)
 
