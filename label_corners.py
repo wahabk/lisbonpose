@@ -15,7 +15,7 @@ while True:
 			vidpath = run['vidpath']
 			tfmpath = run['tfmpath']
 			# skip is number of frames skipped to save on RAM
-			skip = 60
+			skip = 1
 			video = lisbon.getVideo(vidpath, skip = skip)
 			low_res_video = np.array([cv2.resize(frame, (960, 540)) for frame in video])
 
