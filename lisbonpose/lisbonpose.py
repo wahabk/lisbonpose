@@ -312,7 +312,8 @@ class Lisbon():
 		cv2.imshow('Press <S> to save, or any other key to quit.', img)
 		c = cv2.waitKey(0)
 		if 's' == chr(c & 255):
-			cv2.imwrite('.output/'+timestr+'.png', img)
+			save_name = '.output/'+timestr+'.png'
+			cv2.imwrite(save_name, img)
 			print(save_name, 'successfuly saved.')
 		
 

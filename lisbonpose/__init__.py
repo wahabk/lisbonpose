@@ -1,3 +1,3 @@
-from .lisbonpose import Lisbon 
-from .corner_labeller import corner_labeller
-from .video_viewer import video_viewer
+from lisbonpose.lisbonpose import Lisbon 
+# from lisbonpose.corner_labeller import corner_labeller
+# from lisbonpose.video_viewer import video_viewer
